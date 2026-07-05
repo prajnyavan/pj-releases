@@ -1,0 +1,118 @@
+name: Build and Publish Release
+
+# Runs in this PUBLIC repo so builds use unlimited public-repo Actions minutes,
+# not the private source repo's metered minutes. The private repo
+# (prajnyavan/prajnyavan) only sends a near-instant repository_dispatch here
+# after a version tag is pushed; all the actual compiling happens here.
+#
+# Requires a repo secret SOURCE_REPO_TOKEN: a fine-grained personal access
+# token scoped to prajnyavan/prajnyavan with Contents: Read (read-only — this
+# workflow only needs to check out source, never write back to it).
+on:
+  repository_dispatch:
+    types: [build-release]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build (e.g. v0.1.0)"
+        required: true
+      sha:
+        description: "Commit SHA in prajnyavan/prajnyavan to build (defaults to the tag itself)"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            name: macos-arm64
+            target: aarch64-apple-darwin
+          - os: macos-13
+            name: macos-x86_64
+            target: x86_64-apple-darwin
+          - os: ubuntu-latest
+            name: linux-x86_64
+            target: x86_64-unknown-linux-gnu
+    steps:
+      - name: Determine tag and ref to build
+        id: ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${{ github.event.client_payload.tag || inputs.tag }}"
+          sha="${{ github.event.client_payload.sha || inputs.sha }}"
+          if [ -z "$tag" ]; then
+            echo "No tag provided (neither dispatch payload nor workflow_dispatch input)." >&2
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "ref=${sha:-$tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout private source
+        uses: actions/checkout@v4
+        with:
+          repository: prajnyavan/prajnyavan
+          ref: ${{ steps.ref.outputs.ref }}
+          token: ${{ secrets.SOURCE_REPO_TOKEN }}
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build release binary
+        run: cargo build --release -p pj-cli --target ${{ matrix.target }}
+
+      - name: Package archive
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.ref.outputs.tag }}"
+          version="${version#v}"
+          stage="pj-${version}-${{ matrix.name }}"
+          mkdir -p "$stage"
+          cp "target/${{ matrix.target }}/release/pj" "$stage/"
+          cp README.md LICENSE "$stage/" 2>/dev/null || true
+          tar -czf "${stage}.tar.gz" "$stage"
+          shasum -a 256 "${stage}.tar.gz" > "${stage}.tar.gz.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: |
+            pj-*.tar.gz
+            pj-*.tar.gz.sha256
+
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine tag
+        id: ref
+        shell: bash
+        run: |
+          tag="${{ github.event.client_payload.tag || inputs.tag }}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ref.outputs.tag }}
+          draft: true
+          files: dist/*
+          generate_release_notes: true
