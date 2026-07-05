@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://prajnyavan.github.io/pj-releases/sitemap.xml

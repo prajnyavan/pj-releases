@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prajnyavan (pj) — Local AI Coding CLI</title>
+<meta name="description" content="Prajnyavan (pj) is a local-first AI coding CLI: agentic multi-step coding and debugging against local Ollama models, with real OS-level sandboxing, plugins, and MCP scaffolding. Download compiled binaries for macOS and Linux.">
+<link rel="canonical" href="https://prajnyavan.github.io/pj-releases/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Prajnyavan (pj) — Local AI Coding CLI">
+<meta property="og:description" content="A local-first AI coding CLI with real OS-level sandboxing. Download compiled binaries for macOS and Linux.">
+<meta property="og:url" content="https://prajnyavan.github.io/pj-releases/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Prajnyavan",
+  "alternateName": "pj",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "macOS, Linux",
+  "description": "A local-first AI coding CLI that runs agentic, multi-step coding and debugging sessions against local Ollama models (or optional cloud providers), with real OS-level sandboxing, a plugin system, and MCP scaffolding.",
+  "url": "https://prajnyavan.github.io/pj-releases/",
+  "downloadUrl": "https://github.com/prajnyavan/pj-releases/releases",
+  "softwareVersion": "0.1.0",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --code-bg: #010409;
+    --warn: #d29922;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  header.hero {
+    padding: 4rem 1.5rem 3rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  header.hero h1 { font-size: 2.4rem; margin: 0 0 0.5rem; }
+  header.hero p.tagline { color: var(--text-dim); font-size: 1.15rem; margin: 0 0 1.5rem; }
+  header.hero p.philosophy { color: var(--accent); font-weight: 600; margin: 0 0 2rem; }
+  .cta-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .btn.primary { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+  .btn.secondary { color: var(--text); }
+  main { max-width: 780px; margin: 0 auto; padding: 0 1.5rem; }
+  section { padding: 3rem 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 1.6rem; margin-bottom: 1rem; }
+  h3 { font-size: 1.15rem; margin: 1.5rem 0 0.5rem; }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
+  p code, li code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; }
+  ul { padding-left: 1.3rem; }
+  li { margin-bottom: 0.5rem; }
+  .callout {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .crate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .crate {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  .crate strong { color: var(--accent); }
+  footer {
+    text-align: center;
+    padding: 2rem 1.5rem 3rem;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>Prajnyavan</h1>
+  <p class="tagline">A local-first AI coding CLI — agentic, multi-step coding and debugging against local Ollama models, with real OS-level sandboxing.</p>
+  <p class="philosophy">Stability first. Polish second. Power third.</p>
+  <div class="cta-row">
+    <a class="btn primary" href="https://github.com/prajnyavan/pj-releases/releases">Download binaries</a>
+    <a class="btn secondary" href="#install">Install instructions</a>
+    <a class="btn secondary" href="/llms.txt">llms.txt</a>
+  </div>
+</header>
+
+<main>
+
+<section id="about">
+  <h2>What this is</h2>
+  <p>
+    <strong>Prajnyavan</strong> (binary name <code>pj</code>) is a Rust CLI that runs agentic coding
+    sessions — reading, writing, testing, and debugging code across multiple tool-call turns — against
+    a local Ollama model by default, with an optional escalation path to a cloud provider (Anthropic or
+    OpenAI) for harder problems.
+  </p>
+  <p>
+    The source is closed and lives in a private repository. This site, and the
+    <a href="https://github.com/prajnyavan/pj-releases">pj-releases</a> repo it's part of, are the public
+    surface of the project: compiled binaries, install instructions, and honest documentation of what
+    currently works.
+  </p>
+</section>
+
+<section id="expect">
+  <h2>What to actually expect from a local model</h2>
+  <p>
+    <code>pj chat</code> works best with a model that reliably emits structured tool calls (the default,
+    <code>qwen2.5-coder:7b</code>, does this reasonably well).
+  </p>
+  <div class="callout">
+    <strong>Bigger isn't always usable.</strong> <code>pj doctor</code> warns if an installed model is too
+    large for your RAM — a model needs headroom beyond its own size for the OS, context cache, and
+    everything else running. Check it before picking a model, not after it gets OOM-killed mid-session.
+  </div>
+  <p>
+    Local models make real reasoning mistakes: wrong arithmetic in generated tests, ignoring explicit
+    instructions, inconsistent results on identical prompts. <code>pj build</code> catches and retries
+    build/test failures automatically, but it can't catch every kind of mistake. For work where correctness
+    matters more than staying fully local, set <code>PJ_ESCALATE_PROVIDER</code> (<code>anthropic</code> or
+    <code>openai</code>) to hand off to a cloud model after a few stalled turns.
+  </p>
+</section>
+
+<section id="install">
+  <h2>Install</h2>
+
+  <h3>Manual download (available now)</h3>
+  <p>Grab the archive for your platform from the <a href="https://github.com/prajnyavan/pj-releases/releases">Releases page</a>, verify it against the accompanying <code>.sha256</code> file, extract, and put <code>pj</code> on your <code>PATH</code>:</p>
+  <pre><code>curl -LO https://github.com/prajnyavan/pj-releases/releases/download/v0.1.0/pj-0.1.0-macos-arm64.tar.gz
+curl -LO https://github.com/prajnyavan/pj-releases/releases/download/v0.1.0/pj-0.1.0-macos-arm64.tar.gz.sha256
+shasum -a 256 -c pj-0.1.0-macos-arm64.tar.gz.sha256
+tar -xzf pj-0.1.0-macos-arm64.tar.gz
+sudo mv pj-0.1.0-macos-arm64/pj /usr/local/bin/pj
+pj --help</code></pre>
+  <p>Available today: macOS (arm64). macOS (x86_64) and Linux (x86_64) archives land as they're built.</p>
+
+  <h3>Homebrew &amp; npm (coming soon)</h3>
+  <p>A Homebrew tap and an npm package are planned but not yet published to a public tap/registry — this section will link to them once they're live.</p>
+</section>
+
+<section id="features">
+  <h2>Features — what actually works today</h2>
+  <ul>
+    <li><strong>CLI &amp; daemon mode:</strong> <code>pj chat</code> / <code>pj build</code> for interactive use; <code>pj daemon</code> exposes workspace indexing and memory over JSON-RPC.</li>
+    <li><strong>Real sandboxing:</strong> OS-level confinement (macOS Seatbelt / Linux bubblewrap) restricts <code>execute_command</code> to the workspace and temp directories, with network access denied by default, plus execution auditing and redaction.</li>
+    <li><strong>Generate → verify → fix loop:</strong> <code>pj build</code> runs the project's real build/test command after scaffolding and asks the model to fix failures automatically, with a bounded retry count.</li>
+    <li><strong><code>pj doctor</code>:</strong> checks installed Ollama models against available RAM and warns before you hit an OOM kill mid-session.</li>
+    <li><strong>OS keyring for API keys:</strong> <code>pj secret set/status/clear</code> stores cloud provider keys in the system keyring instead of a plaintext env var.</li>
+  </ul>
+  <h3>Scaffolded, not yet wired up</h3>
+  <ul>
+    <li><strong>Plugins:</strong> manifests are parsed, validated, and permission-checked, and WASM modules load via <code>wasmtime</code> — but there's no ABI yet for actually invoking a plugin's code, so plugin tools report that explicitly rather than pretending to run.</li>
+    <li><strong>MCP (Model Context Protocol):</strong> types and an in-process JSON-RPC handler exist, but nothing connects <code>pj chat</code> to an external MCP server yet, and its own tool-execution endpoint isn't wired up either. <code>pj mcp add</code> / <code>pj mcp-server</code> say so explicitly rather than faking success.</li>
+  </ul>
+</section>
+
+<section id="architecture">
+  <h2>Architecture</h2>
+  <p>A Rust workspace of purpose-built crates:</p>
+  <div class="crate-grid">
+    <div class="crate"><strong>pj-core</strong> — agent session, tool loop</div>
+    <div class="crate"><strong>pj-cli</strong> — entry point, commands</div>
+    <div class="crate"><strong>pj-providers</strong> — Ollama/Anthropic/OpenAI</div>
+    <div class="crate"><strong>pj-protocol</strong> — shared value/message types</div>
+    <div class="crate"><strong>pj-security</strong> — permissions, redaction</div>
+    <div class="crate"><strong>pj-execution</strong> — sandboxed command execution</div>
+    <div class="crate"><strong>pj-memory</strong> — short-term context</div>
+    <div class="crate"><strong>pj-persistence</strong> — SQLite-backed storage</div>
+    <div class="crate"><strong>pj-code-index</strong> — workspace code search</div>
+    <div class="crate"><strong>pj-orchestration</strong> — multi-phase task pipeline</div>
+    <div class="crate"><strong>pj-plugins</strong> — WASM plugin loading</div>
+    <div class="crate"><strong>pj-mcp</strong> — Model Context Protocol scaffolding</div>
+    <div class="crate"><strong>pj-batch</strong> — batch job handling</div>
+    <div class="crate"><strong>pj-intelligence</strong> — higher-level reasoning helpers</div>
+    <div class="crate"><strong>pj-templates</strong> — project scaffolding templates</div>
+    <div class="crate"><strong>pj-monitor</strong> — runtime monitoring</div>
+    <div class="crate"><strong>pj-macros</strong> — shared proc-macros</div>
+  </div>
+</section>
+
+<section id="source">
+  <h2>Source &amp; releases</h2>
+  <p>
+    The application source is closed. What's public:
+  </p>
+  <ul>
+    <li><a href="https://github.com/prajnyavan/pj-releases">prajnyavan/pj-releases</a> — this repo: compiled binaries only, published via CI from the private source at tagged commits.</li>
+    <li><a href="https://github.com/prajnyavan/pj-releases/releases">Releases</a> — every published version, with <code>.sha256</code> checksums alongside each archive.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <p>Prajnyavan (pj) · binaries published from <a href="https://github.com/prajnyavan/pj-releases">prajnyavan/pj-releases</a></p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+# Prajnyavan (pj) — full reference
+
+## What this is
+
+Prajnyavan (binary name `pj`) is a Rust CLI that runs agentic coding sessions —
+reading, writing, testing, and debugging code across multiple tool-call turns —
+against a local Ollama model by default, with an optional escalation path to a
+cloud provider (Anthropic or OpenAI) for harder problems.
+
+The source is closed and lives in a private repository. This site, and the
+pj-releases repo (https://github.com/prajnyavan/pj-releases) it's part of, are
+the public surface of the project: compiled binaries, install instructions, and
+honest documentation of what currently works.
+
+## What to actually expect from a local model
+
+`pj chat` works best with a model that reliably emits structured tool calls (the
+default, `qwen2.5-coder:7b`, does this reasonably well).
+
+Bigger isn't always usable: `pj doctor` warns if an installed model is too large
+for your RAM — a model needs headroom beyond its own size for the OS, context
+cache, and everything else running. Check it before picking a model, not after
+it gets OOM-killed mid-session.
+
+Local models make real reasoning mistakes: wrong arithmetic in generated tests,
+ignoring explicit instructions, inconsistent results on identical prompts.
+`pj build` catches and retries build/test failures automatically, but it can't
+catch every kind of mistake. For work where correctness matters more than
+staying fully local, set `PJ_ESCALATE_PROVIDER` (`anthropic` or `openai`) to
+hand off to a cloud model after a few stalled turns.
+
+## Install
+
+### Manual download (available now)
+
+Grab the archive for your platform from the Releases page
+(https://github.com/prajnyavan/pj-releases/releases), verify it against the
+accompanying `.sha256` file, extract, and put `pj` on your PATH:
+
+```
+curl -LO https://github.com/prajnyavan/pj-releases/releases/download/v0.1.0/pj-0.1.0-macos-arm64.tar.gz
+curl -LO https://github.com/prajnyavan/pj-releases/releases/download/v0.1.0/pj-0.1.0-macos-arm64.tar.gz.sha256
+shasum -a 256 -c pj-0.1.0-macos-arm64.tar.gz.sha256
+tar -xzf pj-0.1.0-macos-arm64.tar.gz
+sudo mv pj-0.1.0-macos-arm64/pj /usr/local/bin/pj
+pj --help
+```
+
+Available today: macOS (arm64). macOS (x86_64) and Linux (x86_64) archives land
+as they're built.
+
+### Homebrew & npm (coming soon)
+
+A Homebrew tap and an npm package are planned but not yet published to a public
+tap/registry.
+
+## Features — what actually works today
+
+- CLI & daemon mode: `pj chat` / `pj build` for interactive use; `pj daemon`
+  exposes workspace indexing and memory over JSON-RPC.
+- Real sandboxing: OS-level confinement (macOS Seatbelt / Linux bubblewrap)
+  restricts `execute_command` to the workspace and temp directories, with
+  network access denied by default, plus execution auditing and redaction.
+- Generate → verify → fix loop: `pj build` runs the project's real build/test
+  command after scaffolding and asks the model to fix failures automatically,
+  with a bounded retry count.
+- `pj doctor`: checks installed Ollama models against available RAM and warns
+  before you hit an OOM kill mid-session.
+- OS keyring for API keys: `pj secret set/status/clear` stores cloud provider
+  keys in the system keyring instead of a plaintext env var.
+
+## Scaffolded, not yet wired up
+
+- Plugins: manifests are parsed, validated, and permission-checked, and WASM
+  modules load via `wasmtime` — but there's no ABI yet for actually invoking a
+  plugin's code, so plugin tools report that explicitly rather than pretending
+  to run.
+- MCP (Model Context Protocol): types and an in-process JSON-RPC handler exist,
+  but nothing connects `pj chat` to an external MCP server yet, and its own
+  tool-execution endpoint isn't wired up either. `pj mcp add` / `pj mcp-server`
+  say so explicitly rather than faking success.
+
+## Architecture
+
+A Rust workspace of purpose-built crates:
+
+- pj-core — agent session, tool loop
+- pj-cli — entry point, commands
+- pj-providers — Ollama/Anthropic/OpenAI
+- pj-protocol — shared value/message types
+- pj-security — permissions, redaction
+- pj-execution — sandboxed command execution
+- pj-memory — short-term context
+- pj-persistence — SQLite-backed storage
+- pj-code-index — workspace code search
+- pj-orchestration — multi-phase task pipeline
+- pj-plugins — WASM plugin loading
+- pj-mcp — Model Context Protocol scaffolding
+- pj-batch — batch job handling
+- pj-intelligence — higher-level reasoning helpers
+- pj-templates — project scaffolding templates
+- pj-monitor — runtime monitoring
+- pj-macros — shared proc-macros
+
+## Source & releases
+
+The application source is closed. What's public:
+
+- prajnyavan/pj-releases (https://github.com/prajnyavan/pj-releases) — compiled
+  binaries only, published via CI from the private source at tagged commits.
+- Releases (https://github.com/prajnyavan/pj-releases/releases) — every
+  published version, with `.sha256` checksums alongside each archive.

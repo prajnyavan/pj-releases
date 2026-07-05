@@ -1,0 +1,20 @@
+# Prajnyavan (pj)
+
+> Prajnyavan (binary name `pj`) is a local-first AI coding CLI, written in Rust, that runs agentic multi-step coding and debugging sessions against a local Ollama model by default, with optional escalation to a cloud provider (Anthropic or OpenAI). It includes real OS-level sandboxing (macOS Seatbelt / Linux bubblewrap) for command execution.
+
+Prajnyavan's application source is closed and lives in a private repository. This
+site and the `pj-releases` repo it's published from are the public surface of the
+project: compiled binaries, install instructions, and documentation of what
+currently works versus what's still scaffolded.
+
+## Docs
+
+- [Website](https://prajnyavan.github.io/pj-releases/): install instructions, feature list, architecture overview
+- [Full text](https://prajnyavan.github.io/pj-releases/llms-full.txt): the entire site's content as plain text, for ingestion without HTML parsing
+- [Releases](https://github.com/prajnyavan/pj-releases/releases): compiled binaries for macOS (arm64, x86_64) and Linux (x86_64), each with a `.sha256` checksum
+
+## Notes
+
+- Default local model: `qwen2.5-coder:7b` via Ollama. `pj doctor` warns if an installed model is too large for available RAM.
+- Sandboxing (macOS Seatbelt, Linux bubblewrap) is real and enforced; the plugin system (WASM via `wasmtime`) and MCP (Model Context Protocol) support are scaffolded but not yet wired into the live agent loop, and say so explicitly rather than simulating success.
+- `pj build` runs a generate → verify → fix loop: it scaffolds a project, runs its real build/test command, and asks the model to repair failures, with a bounded retry count.
